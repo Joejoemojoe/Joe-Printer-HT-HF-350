@@ -1,0 +1,116 @@
+---
+title: Voron 2.4–Style CoreXY Printer Overview
+description: A practical overview of designing, sourcing, assembling, wiring, and tuning a CoreXY printer similar in concept to a Voron 2.4.
+nav: 2
+---
+
+# Voron 2.4–Style CoreXY Printer Overview
+
+This page is a practical, from-scratch overview for building and operating a CoreXY printer in the spirit of a Voron 2.4: a rigid, enclosed, high‑speed machine with a stationary build plate and a Z‑moving gantry. It’s not a substitute for any official documentation; rather, it’s a concise guide to the architectural choices, typical BOM, safe wiring practices, and the tuning steps that actually move the needle.
+
+## Architecture at a Glance
+
+- Motion system: CoreXY (independent A/B XY motors)
+- Z system: Gantry moves up/down on 4 leadscrews/rails (fixed bed). Z‑tilt correction via firmware
+- Frame: 2020 aluminum extrusion with rigid bracing; enclosed for ABS/ASA
+- Linear motion: MGN rails on X/Y/Z, carriage preload matched to rail width
+- Belts: 2GT open belt; 6 mm is common, 9 mm possible if idlers/pulleys support it
+- Electronics: 24 V system, mains‑heated bed (via SSR) or 24 V DC bed heater
+- Firmware: Klipper recommended (fast kinematics, input shaping, macros)
+- Toolhead: Lightweight extruder + high‑flow hotend, dual part cooling, probe for Z/tilt
+
+Why this architecture works: CoreXY keeps the moving mass low for XY, while a stationary bed avoids sloshing large parts and helps with chamber temperature stability. A rigid cube frame and short belt paths enable higher accelerations with fewer resonances.
+
+## Typical Specifications
+
+- Build volumes: 250×250, 300×300, or 350×350 mm
+- Speeds/accels (after tuning): 150–300 mm/s outer walls, 6 000–20 000 mm/s² accel, 0.2 mm layer common
+- Materials: PLA/PA/PETG/ASA/ABS; enclosure recommended for ABS/ASA/PA
+- Chamber temp: Passive 40–60 °C typical from bed; active heating is optional and advanced
+
+## Bill of Materials (BOM)
+
+Frame & Mechanics
+- 2020 extrusions cut to size, corner cubes/angles, feet, fasteners (M5/M3, T‑nuts)
+- Linear rails: X (MGN9/12), Y (MGN12), Z (MGN12 per tower). Medium preload carriages
+- Lead screws or belted Z reduction (varies by design); 4 Z motors with couplers and pulleys
+- Belts & pulleys: Gates 2GT open belt, matching idlers (flanged, quality bearings)
+- Print bed: MIC6/aluminum tooling plate + silicone heater + spring steel PEI flex plate
+- Panels: Acrylic/PC/ABS panels for sides/top/door; latches and hinges
+
+Toolhead
+- Hotend: High‑flow unit (e.g., Rapido, Dragon HF, Mosquito, or V6‑class if speeds are lower)
+- Extruder: Lightweight geared direct drive (e.g., CW2‑style, Orbiter‑class, LGX Lite)
+- Part cooling: Dual 4010/4020 blowers or one 5015 with tuned ducting
+- Probe: Inductive/eddy‑current (e.g., Beacon) or nozzle probe; endstops as needed
+
+Electronics
+- MCU: 32‑bit board with ample drivers I/O (e.g., BTT Octopus/Spider). Optional CAN toolhead board
+- Stepper drivers: TMC2209/5160 per axis; sensorless homing optional
+- PSU: 24 V 350–600 W (size for heaters + motors + fans)
+- Bed power: Mains silicone heater + SSR (quality, zero‑cross). Or 24 V DC heater (slower heat)
+- Safety: Mains fuse, bed thermal fuse, ground continuity, cable glands, strain relief
+- Misc: Fans (electronics, hotend), LEDs, wiring harness, JST‑XH/MicroFit connectors, ferrules
+
+## Mechanical Assembly Notes
+
+- Squaring the frame: Tighten in stages. Measure diagonals; shim if needed. The enclosure panels add stiffness—fit them after rough alignment but before final torque.
+- Rails: De‑grease shipping oil, apply light rail grease (NLGI 1–2). Run carriages by hand across the full stroke and check for binding. Mount rails parallel within ±0.1 mm across span.
+- Belts: Equalize path lengths for A/B. Use quality pulleys/idlers; verify flanges don’t rub. Target firm tension without overloading bearings; a frequency app can help keep both belts matched.
+- Z: Keep the gantry coplanar. If using 4 independent Z motors, rely on Klipper’s Z_TILT to level the plane against the bed. Ensure leadscrew couplers aren’t bottoming out.
+- Bed: MIC6 plate, flatness checked with straightedge/feeler gauge. Use insulation under the heater to stabilize temps and protect electronics.
+
+## Electronics & Wiring
+
+- Layout: Keep mains wiring segregated and properly insulated. Route stepper/fan/probe harnesses cleanly with strain relief and drip loops where appropriate.
+- Grounding: Bond frame to earth; verify continuity from the mains inlet earth to all exposed metal.
+- SSR: Mount to metal for heat sinking; use a trusted brand. Add a thermal fuse to the bed heater.
+- Cable management: Braided sleeving or drag chains. Avoid sharp panel edges; use grommets.
+
+## Firmware (Klipper)
+
+- Kinematics: CoreXY with separate A/B motors; configure steps/mm based on pulley teeth and belt pitch.
+- Z‑Tilt: Define probe points at the bed corners; run Z_TILT_ADJUST at start to square the gantry.
+- Input Shaping: Use an accelerometer (on carriage/toolhead) to identify resonances for X/Y; set shaper accordingly (MZV/2H/3H, etc.).
+- Pressure Advance: Calibrate for your filament/hotend/extrusion path to reduce corner blobbing.
+- Macros: Start/End G‑code to preheat, Z‑tilt, prime, purge, and chamber‑soak for ABS/ASA.
+
+## Tuning Checklist
+
+1) Motion sanity: Move X/Y/Z full travel without stalls or binding. Home reliably.
+2) Temps: PID tune hotend and bed. Confirm bed thermistor placement matches firmware.
+3) Z reference: Probe repeatability test; verify Z offset at multiple bed locations.
+4) Input shaping: Run resonance testing and set shaper gains; verify ringing reduction.
+5) Pressure advance: Calibrate per filament. Expect different values for PLA vs ABS.
+6) Flow & linearity: Calibrate flow at typical speeds/temps; check wall thickness.
+7) First layer: Dial in Z offset and bed mesh (if used). Aim for consistent line squish.
+
+## Enclosure & Thermals
+
+- Panels: Seal major gaps to stabilize chamber temperature. Keep electronics out of hot airflow where possible (under‑deck or an external bay).
+- Materials: ASA/ABS benefit from 40–60 °C chamber; reduce drafts to mitigate warping.
+- Ventilation: For PLA/PETG runs, crack the door to keep chamber cooler and avoid softening parts near the toolhead.
+
+## Safety
+
+- Mains best practices: IEC inlet with switch/fuse; proper wire gauge; ring/fork terminals or ferrules; heat‑shrink and cable clamps.
+- Bed safety: Thermal fuse on the bed, SSR with correct current headroom, and secured wiring with strain relief.
+- Fire considerations: Never leave a new build unattended. Add smoke/thermal sensors if possible.
+
+## Common Upgrades & Options
+
+- Toolhead CAN bus board to simplify wiring and reduce cable mass
+- Nozzle‑based probing or high‑precision eddy‑current probe for consistent Z
+- 9 mm XY belts and stiffer idlers if pushing acceleration very high
+- Lightweight extruder/hotend combination for reduced ringing at speed
+- Chamber thermistor and macro‑controlled fans for temperature management
+
+## Expected Performance
+
+With a square frame, smooth rails, correctly tensioned belts, and sensible firmware tuning, you can expect clean walls at 150–250 mm/s with 0.2 mm layers, and significantly faster interior infill. High‑flow hotends enable thicker lines and higher volumetric rates; input shaping and pressure advance control ringing and corner accuracy. The stationary bed and enclosure help large ABS/ASA parts survive without severe warping.
+
+## Next Steps
+
+- Review the [Build Guide](/docs/build-guide) for step‑by‑step assembly order.
+- See [Tuning](/docs/tuning) for detailed calibration steps (input shaping, PA, flow, mesh).
+- Upload photos/videos to `public/uploads/` to generate updates as you progress.

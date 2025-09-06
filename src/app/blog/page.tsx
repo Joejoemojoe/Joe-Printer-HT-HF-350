@@ -30,6 +30,13 @@ export default function BlogIndex() {
       const ext = url.split('.').pop()?.toLowerCase() || '';
       if (IMG_EXT.has(`.${ext}`)) return { type: 'image', url, alt: undefined };
     }
+    // HTML image: <img src="/path" ...>
+    const htmlImg = content.match(/<img[^>]*src=\"([^\"]+)\"[^>]*>/i);
+    if (htmlImg) {
+      const url = htmlImg[1];
+      const ext = url.split('.').pop()?.toLowerCase() || '';
+      if (IMG_EXT.has(`.${ext}`)) return { type: 'image', url, alt: undefined };
+    }
   // HTML video with src
   const htmlVideo = content.match(/<video[^>]*src=\"([^\"]+)\"[^>]*>/i);
   if (htmlVideo) {

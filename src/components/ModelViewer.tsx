@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 declare global {
   namespace JSX {
@@ -10,6 +10,10 @@ declare global {
 }
 
 export default function ModelViewer({ src, autoRotate = true, cameraControls = true, className = '' }: { src: string; autoRotate?: boolean; cameraControls?: boolean; className?: string }) {
+  // Render nothing on the server and on the initial client render to prevent
+  // hydration mismatches caused by the web component mutating attributes.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
   const encodePath = (p: string) => p.split('/').map((seg, i) => (i === 0 ? seg : encodeURIComponent(seg))).join('/');
   const full = useMemo(() => (src.startsWith('/') ? basePath + (decodeURI(src) === src ? encodePath(src) : src) : src), [src, basePath]);
@@ -25,6 +29,17 @@ export default function ModelViewer({ src, autoRotate = true, cameraControls = t
       document.head.appendChild(s);
     }
   }, []);
+
+  if (!mounted) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-surface text-gray-400 text-sm">
+        <div className="animate-pulse flex items-center gap-2">
+          <div className="w-2.5 h-2.5 rounded-full bg-gray-600 animate-pulse" />
+          <span>Loading model…</span>
+        </div>
+      </div>
+    );
+  }
 
   const ModelViewerElement: any = 'model-viewer';
   return (
