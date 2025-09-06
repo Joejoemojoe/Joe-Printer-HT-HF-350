@@ -15,9 +15,9 @@ export default function ModelViewer({ src, autoRotate = true, cameraControls = t
   const full = useMemo(() => (src.startsWith('/') ? basePath + (decodeURI(src) === src ? encodePath(src) : src) : src), [src, basePath]);
 
   useEffect(() => {
-    // Load model-viewer web component from CDN once
+    // Fallback: if layout didn't load the script yet (rare), inject it lazily
     const id = 'model-viewer-cdn';
-    if (typeof window !== 'undefined' && !document.getElementById(id)) {
+    if (typeof window !== 'undefined' && !customElements?.get?.('model-viewer') && !document.getElementById(id)) {
       const s = document.createElement('script');
       s.id = id;
       s.type = 'module';

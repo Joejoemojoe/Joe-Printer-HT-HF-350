@@ -2,6 +2,8 @@ import './globals.css';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { Metadata } from 'next';
+import Script from 'next/script';
+import { getFirstModel } from '@/lib/media';
 import '@fontsource/inter/400.css';
 import '@fontsource/inter/500.css';
 import '@fontsource/inter/600.css';
@@ -14,9 +16,25 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+  const model = getFirstModel();
+  const encodePath = (p: string) => p.split('/').map((seg, i) => (i === 0 ? seg : encodeURIComponent(seg))).join('/');
+  const modelHref = model?.src
+    ? (model.src.startsWith('/') ? basePath + (decodeURI(model.src) === model.src ? encodePath(model.src) : model.src) : model.src)
+    : null;
+  const modelType = model?.ext === '.gltf' ? 'model/gltf+json' : model?.ext === '.glb' ? 'model/gltf-binary' : undefined;
   return (
     <html lang="en" className="dark">
+      <head>
+        <link rel="dns-prefetch" href="//unpkg.com" />
+        <link rel="preconnect" href="https://unpkg.com" crossOrigin="anonymous" />
+        {modelHref && modelType && (
+          <link rel="preload" as="fetch" href={modelHref} crossOrigin="anonymous" type={modelType} />
+        )}
+      </head>
       <body className="font-sans bg-ink text-gray-200 min-h-screen flex flex-col">
+  {/* Load model-viewer early so the 3D model can render ASAP */}
+  <Script id="model-viewer-cdn" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js" type="module" strategy="beforeInteractive" />
         <header className="border-b border-border bg-surface/80 backdrop-blur supports-[backdrop-filter]:bg-surface/60 sticky top-0 z-40">
           <div className="mx-auto max-w-6xl px-4 h-14 flex items-center gap-6">
             <Link href="/" className="font-semibold text-gray-100 hover:text-white">JoePrinter</Link>
