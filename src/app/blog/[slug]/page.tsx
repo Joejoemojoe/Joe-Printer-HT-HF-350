@@ -15,7 +15,18 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
     const withBase = (url?: string) => (url && url.startsWith('/')) ? `${basePath}${url}` : url || '';
     const components = {
-      img: (props: any) => <img {...props} src={withBase(props.src)} />,
+      img: (props: any) => {
+        const src = withBase(props.src);
+        return (
+          <a href={src} target="_blank" rel="noopener noreferrer">
+            <img
+              {...props}
+              src={src}
+              style={{ maxWidth: '100%', height: 'auto', borderRadius: 6, ...(props.style || {}) }}
+            />
+          </a>
+        );
+      },
       video: (props: any) => <video {...props} src={withBase(props.src)} />,
       source: (props: any) => <source {...props} src={withBase(props.src)} />,
       a: (props: any) => <a {...props} href={withBase(props.href)} />,
