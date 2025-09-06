@@ -28,9 +28,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <head>
         <link rel="dns-prefetch" href="//unpkg.com" />
         <link rel="preconnect" href="https://unpkg.com" crossOrigin="anonymous" />
-        {modelHref && modelType && (
-          <link rel="preload" as="fetch" href={modelHref} crossOrigin="anonymous" type={modelType} />
-        )}
+  {/* Intentionally do not preload the 3D model to keep first-load data small. */}
       </head>
       <body className="font-sans bg-ink text-gray-200 min-h-screen flex flex-col">
   {/* Load model-viewer early so the 3D model can render ASAP */}
