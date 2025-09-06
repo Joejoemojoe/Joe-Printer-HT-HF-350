@@ -13,10 +13,37 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   try {
     const { meta, content } = getPostBySlug(slug);
     const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
-    const withBase = (url?: string) => (url && url.startsWith('/')) ? `${basePath}${url}` : url || '';
+    const encodePath = (p: string) => p
+      .split('/')
+      .map((seg, i) => (i === 0 ? seg : encodeURIComponent(seg)))
+      .join('/');
+    const withBase = (url?: string) => {
+      if (!url) return '';
+      if (!url.startsWith('/')) return url;
+      let encoded = url;
+      try {
+        // If not already percent-encoded, encode each segment
+        if (decodeURI(url) === url) encoded = encodePath(url);
+      } catch {
+        // On malformed URI, fall back to raw
+      }
+      return `${basePath}${encoded}`;
+    };
     const components = {
       img: (props: any) => {
-        const src = withBase(props.src);
+        const raw = props.src as string | undefined;
+        const src = withBase(raw);
+        const isHeic = !!raw && /\.heic$/i.test(raw);
+        if (isHeic) {
+          return (
+            <div className="rounded-md border border-border bg-ink p-3 text-sm text-gray-300">
+              <div>HEIC image attached.</div>
+              <a className="underline text-blue-300" href={src} target="_blank" rel="noopener noreferrer">
+                Download original
+              </a>
+            </div>
+          );
+        }
         return (
           <a href={src} target="_blank" rel="noopener noreferrer">
             <img

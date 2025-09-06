@@ -3,6 +3,10 @@ import { getLocalVideos } from '@/lib/media';
 export default function VideosPage() {
   const local = getLocalVideos();
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+  const encodePath = (p: string) => p
+    .split('/')
+    .map((seg, i) => (i === 0 ? seg : encodeURIComponent(seg)))
+    .join('/');
   return (
     <div className="space-y-8 w-full">
       <h1 className="text-3xl font-bold text-white">Videos</h1>
@@ -12,7 +16,7 @@ export default function VideosPage() {
           {local.map(v => (
             <div key={v.src} className="rounded-lg overflow-hidden border border-border bg-surface">
               <video className="w-full" controls poster={v.poster}>
-                <source src={v.src.startsWith('/') ? basePath + v.src : v.src} />
+                <source src={v.src.startsWith('/') ? basePath + (decodeURI(v.src) === v.src ? encodePath(v.src) : v.src) : v.src} />
                 Your browser does not support the video tag.
               </video>
               <div className="p-2 text-[12px] text-gray-300 border-t border-border">{v.title}</div>
