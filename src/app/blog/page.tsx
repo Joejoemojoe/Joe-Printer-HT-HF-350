@@ -30,11 +30,12 @@ export default function BlogIndex() {
       const ext = url.split('.').pop()?.toLowerCase() || '';
       if (IMG_EXT.has(`.${ext}`)) return { type: 'image', url, alt: undefined };
     }
-    // HTML video with src
-    const htmlVideo = content.match(/<video[^>]*src=\"([^\"]+)\"[^>]*>/i);
-    if (htmlVideo) {
-      return { type: 'video', url: htmlVideo[1] };
-    }
+  // HTML video with src
+  const htmlVideo = content.match(/<video[^>]*src=\"([^\"]+)\"[^>]*>/i);
+  if (htmlVideo) return { type: 'video', url: htmlVideo[1] };
+  // HTML video that uses <source src="...">
+  const sourceVideo = content.match(/<source[^>]*src=\"([^\"]+)\"[^>]*>/i);
+  if (sourceVideo) return { type: 'video', url: sourceVideo[1] };
     // Fallback: first markdown link as file
     const mdLink = content.match(/\[[^\]]*\]\(([^)]+)\)/);
     if (mdLink) return { type: 'file', url: mdLink[1] };
