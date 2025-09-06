@@ -13,6 +13,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   try {
     const { meta, content } = getPostBySlug(slug);
     const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+    const owner = 'Joejoemojoe';
+    const repo = 'Joe-Printer-HT-HF-350';
     const encodePath = (p: string) => p
       .split('/')
       .map((seg, i) => (i === 0 ? seg : encodeURIComponent(seg)))
@@ -29,6 +31,12 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       }
       return `${basePath}${encoded}`;
     };
+    const lfsUrl = (url?: string) => {
+      if (!url || !url.startsWith('/uploads/')) return undefined;
+      const file = url.split('/').slice(2).join('/');
+      const enc = encodeURIComponent(file).replace(/%2F/g, '/');
+      return `https://raw.githubusercontent.com/${owner}/${repo}/main/public/uploads/${enc}`;
+    };
   const components = {
       img: (props: any) => {
         const raw = props.src as string | undefined;
@@ -44,14 +52,21 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             </div>
           );
         }
+        const rawLfs = lfsUrl(raw);
         return (
-          <a href={src} target="_blank" rel="noopener noreferrer">
-            <img
-              {...props}
-              src={src}
-              style={{ maxWidth: '100%', height: 'auto', borderRadius: 6, ...(props.style || {}) }}
-            />
-          </a>
+          <div>
+            <h3>Display</h3>
+            <a href={src} target="_blank" rel="noopener noreferrer">
+              <img
+                {...props}
+                src={src}
+                style={{ maxWidth: '100%', height: 'auto', borderRadius: 6, ...(props.style || {}) }}
+              />
+            </a>
+            {rawLfs && (
+              <p className="mt-2 text-sm"><a className="underline" href={rawLfs} target="_blank" rel="noopener noreferrer">Download from LFS</a></p>
+            )}
+          </div>
         );
       },
       video: (props: any) => {
@@ -61,19 +76,34 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         const ext = (raw?.split('.').pop() || '').toLowerCase();
         const type = ext === 'mp4' ? 'video/mp4' : ext === 'webm' ? 'video/webm' : ext === 'ogv' ? 'video/ogg' : ext === 'mov' ? 'video/quicktime' : undefined;
         // If children already include <source>, just prefix children via our 'source' override
+        const rawLfs = lfsUrl(raw);
         if (props.children) {
-          return <video {...props} style={{ width: '100%', ...(props.style || {}) }} />;
+          return (
+            <div>
+              <h3>Display</h3>
+              <video {...props} style={{ width: '100%', ...(props.style || {}) }} />
+              {rawLfs && (
+                <p className="mt-2 text-sm"><a className="underline" href={rawLfs} target="_blank" rel="noopener noreferrer">Download from LFS</a></p>
+              )}
+            </div>
+          );
         }
         return (
-          <video {...props} controls style={{ width: '100%', ...(props.style || {}) }}>
-            {src && <source src={src} {...(type ? { type } : {})} />}
-            Your browser does not support the video tag. {raw ? 'Download: ' : ''}
-            {raw && (
-              <a href={src} target="_blank" rel="noopener noreferrer">
-                {raw}
-              </a>
+          <div>
+            <h3>Display</h3>
+            <video {...props} controls style={{ width: '100%', ...(props.style || {}) }}>
+              {src && <source src={src} {...(type ? { type } : {})} />}
+              Your browser does not support the video tag. {raw ? 'Download: ' : ''}
+              {raw && (
+                <a href={src} target="_blank" rel="noopener noreferrer">
+                  {raw}
+                </a>
+              )}
+            </video>
+            {rawLfs && (
+              <p className="mt-2 text-sm"><a className="underline" href={rawLfs} target="_blank" rel="noopener noreferrer">Download from LFS</a></p>
             )}
-          </video>
+          </div>
         );
       },
       source: (props: any) => <source {...props} src={withBase(props.src)} />,

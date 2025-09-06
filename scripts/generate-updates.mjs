@@ -8,6 +8,9 @@ const blogDir = path.join(repoRoot, 'content', 'blog');
 
 const IMG_EXT = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif', '.svg', '.heic']);
 const VID_EXT = new Set(['.mp4', '.webm', '.ogv', '.mov']);
+// GitHub repository info (for public LFS raw links)
+const GITHUB_OWNER = 'Joejoemojoe';
+const GITHUB_REPO = 'Joe-Printer-HT-HF-350';
 
 function humanize(s) {
   return s.replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
@@ -43,15 +46,29 @@ function generatePostForFile(file) {
     outName = `${date}-${slugBase}-${idx++}.mdx`;
   }
 
-  const rel = `/uploads/${path.basename(file)}`;
+  const fname = path.basename(file);
+  const rel = `/uploads/${fname}`;
+  const encFile = encodeURIComponent(fname).replace(/%2F/g, '/');
+  const lfs = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/public/uploads/${encFile}`;
   const isImg = IMG_EXT.has(ext);
   const isVid = VID_EXT.has(ext);
   const mime = ext === '.mp4' ? 'video/mp4' : ext === '.webm' ? 'video/webm' : ext === '.ogv' ? 'video/ogg' : ext === '.mov' ? 'video/quicktime' : '';
-  const embed = isImg
-    ? `![${title}](${rel})`
+  // Try to find a poster image alongside the video (same basename, any image ext)
+  let poster = '';
+  if (isVid) {
+    for (const cand of ['.jpg', '.jpeg', '.png', '.webp']) {
+      const p = path.join(uploadsDir, `${base}${cand}`);
+      if (fs.existsSync(p)) {
+        poster = `/uploads/${path.basename(p)}`;
+        break;
+      }
+    }
+  }
+  const displayBlock = isImg
+    ? `### Display\n\n![${title}](${rel})\n\n[Download from LFS](${lfs})`
     : isVid
-    ? `<video controls style={{ width: '100%' }}><source src="${rel}"${mime ? ` type="${mime}"` : ''} /></video>`
-    : `[Download file](${rel})`;
+    ? `### Display\n\n<video controls preload="metadata"${poster ? ` poster="${poster}"` : ''} style={{ width: '100%' }}><source src="${rel}"${mime ? ` type="${mime}"` : ''} /></video>\n\n[Download from LFS](${lfs})`
+    : `### Display\n\n[Download file](${rel})  \\n+[Download from LFS](${lfs})`;
 
   const mdx = `---\n` +
     `title: "${title}"\n` +
@@ -61,7 +78,7 @@ function generatePostForFile(file) {
     `draft: false\n` +
     `---\n\n` +
     `Auto-generated update for ${path.basename(file)}.\n\n` +
-    `${embed}\n`;
+    `${displayBlock}\n`;
 
   fs.writeFileSync(path.join(blogDir, outName), mdx, 'utf8');
   return outName;

@@ -22,7 +22,7 @@ export default function BlogIndex() {
   };
   const IMG_EXT = new Set(['.jpg','.jpeg','.png','.webp','.gif','.svg','.heic']);
   const VID_EXT = new Set(['.mp4','.webm','.ogv','.mov']);
-  const firstMedia = (content: string): { type: 'image'|'video'|'file'; url: string; alt?: string } | null => {
+  const firstMedia = (content: string): { type: 'image'|'video'|'file'; url: string; alt?: string; poster?: string } | null => {
     // Markdown image: ![alt](/path)
     const mdImg = content.match(/!\[[^\]]*\]\(([^)]+)\)/);
     if (mdImg) {
@@ -32,10 +32,16 @@ export default function BlogIndex() {
     }
   // HTML video with src
   const htmlVideo = content.match(/<video[^>]*src=\"([^\"]+)\"[^>]*>/i);
-  if (htmlVideo) return { type: 'video', url: htmlVideo[1] };
+  if (htmlVideo) {
+    const poster = content.match(/<video[^>]*poster=\"([^\"]+)\"[^>]*>/i)?.[1];
+    return { type: 'video', url: htmlVideo[1], poster };
+  }
   // HTML video that uses <source src="...">
   const sourceVideo = content.match(/<source[^>]*src=\"([^\"]+)\"[^>]*>/i);
-  if (sourceVideo) return { type: 'video', url: sourceVideo[1] };
+  if (sourceVideo) {
+    const poster = content.match(/<video[^>]*poster=\"([^\"]+)\"[^>]*>/i)?.[1];
+    return { type: 'video', url: sourceVideo[1], poster };
+  }
     // Fallback: first markdown link as file
     const mdLink = content.match(/\[[^\]]*\]\(([^)]+)\)/);
     if (mdLink) return { type: 'file', url: mdLink[1] };
@@ -69,10 +75,16 @@ export default function BlogIndex() {
                           return <img src={url} alt={m.alt || p.meta.title} className="w-20 h-16 object-cover rounded border border-border shrink-0" />;
                         }
                         if (m.type === 'video') {
+                          const poster = m.poster ? withBase(m.poster) : '';
+                          if (poster) {
+                            return <img src={poster} alt={p.meta.title} className="w-20 h-16 object-cover rounded border border-border shrink-0" />;
+                          }
+                          const ext = (m.url.split('.').pop() || '').toLowerCase();
+                          const type = ext === 'mp4' ? 'video/mp4' : ext === 'webm' ? 'video/webm' : ext === 'ogv' ? 'video/ogg' : ext === 'mov' ? 'video/quicktime' : undefined;
                           return (
-                            <div className="w-20 h-16 flex items-center justify-center rounded border border-border bg-ink text-[10px] text-gray-300 shrink-0">
-                              Video
-                            </div>
+                            <video className="w-20 h-16 object-cover rounded border border-border shrink-0" muted playsInline loop preload="metadata">
+                              <source src={url} {...(type ? { type } : {})} />
+                            </video>
                           );
                         }
                         return (
