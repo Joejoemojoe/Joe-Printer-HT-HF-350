@@ -6,6 +6,7 @@
   "scripts": {
   "dev": "next dev",
   "build": "next build",
+  "gen:updates": "node scripts/generate-updates.mjs",
   "start": "next start",
   "lint": "next lint"
   },

@@ -7,6 +7,10 @@ const nextConfig = {
   output: 'export',
   // Silence monorepo root inference warnings
   outputFileTracingRoot: process.cwd(),
+  // Expose basePath to the client/server runtime for prefixing public asset URLs
+  env: {
+    NEXT_PUBLIC_BASE_PATH: isProd ? `/${repo}` : ''
+  },
   // Serve from /<repo> when deployed to GitHub Pages project site
   basePath: isProd ? `/${repo}` : '',
   assetPrefix: isProd ? `/${repo}/` : undefined,

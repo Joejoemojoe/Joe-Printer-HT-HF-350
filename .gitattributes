@@ -1,0 +1,17 @@
+# Track large media with Git LFS (scoped to public assets)
+public/uploads/** filter=lfs diff=lfs merge=lfs -text
+public/videos/**  filter=lfs diff=lfs merge=lfs -text
+public/gallery/** filter=lfs diff=lfs merge=lfs -text
+
+# Optional: track common large media anywhere in repo (uncomment if desired)
+# *.mp4 filter=lfs diff=lfs merge=lfs -text
+# *.webm filter=lfs diff=lfs merge=lfs -text
+# *.mov filter=lfs diff=lfs merge=lfs -text
+# *.ogv filter=lfs diff=lfs merge=lfs -text
+# *.zip filter=lfs diff=lfs merge=lfs -text
+# *.7z  filter=lfs diff=lfs merge=lfs -text
+# *.jpg filter=lfs diff=lfs merge=lfs -text
+# *.jpeg filter=lfs diff=lfs merge=lfs -text
+# *.png filter=lfs diff=lfs merge=lfs -text
+# *.webp filter=lfs diff=lfs merge=lfs -text
+# *.gif filter=lfs diff=lfs merge=lfs -text
