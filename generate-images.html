@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Sample Images</title>
+</head>
+<body>
+    <h1>Sample Image Generator</h1>
+    <p>Click the button to generate placeholder images for the 3D printer documentation site.</p>
+    <button onclick="generateImages()">Generate Sample Images</button>
+    <div id="status"></div>
+
+    <script>
+        function generateImages() {
+            const status = document.getElementById('status');
+            status.innerHTML = 'Generating images...';
+            
+            const images = [
+                { name: 'cover-welcome.jpg', text: 'Welcome', bg: '#1e293b' },
+                { name: 'cover-frame.jpg', text: 'Frame Build', bg: '#0f766e' },
+                { name: 'frame.jpg', text: 'CoreXY Frame', bg: '#7c3aed' },
+                { name: 'benchy.jpg', text: 'First Benchy', bg: '#dc2626' },
+                { name: 'hero.jpg', text: 'Joe\'s 3D Printer', bg: '#0ea5e9' }
+            ];
+
+            images.forEach(img => {
+                const canvas = document.createElement('canvas');
+                canvas.width = 800;
+                canvas.height = 600;
+                const ctx = canvas.getContext('2d');
+                
+                // Background
+                ctx.fillStyle = img.bg;
+                ctx.fillRect(0, 0, 800, 600);
+                
+                // Text
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 48px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(img.text, 400, 300);
+                
+                // Subtitle
+                ctx.font = '24px Arial';
+                ctx.fillText('Sample Image', 400, 350);
+                
+                // Download
+                canvas.toBlob(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = img.name;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                });
+            });
+            
+            status.innerHTML = 'Images generated! Check your downloads folder and move them to public/assets/';
+        }
+    </script>
+</body>
+</html>

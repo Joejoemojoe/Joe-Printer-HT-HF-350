@@ -1,0 +1,36 @@
+---
+ title: Tuning
+ description: Extrusion, motion, resonance & calibration methods.
+ nav: 3
+---
+
+# Tuning
+
+Good mechanical assembly reduces firmware compensation required.
+
+## Flow Calibration
+
+```text
+1. Heat nozzle to print temp
+2. Mark filament 120mm above extruder entry
+3. Extrude 100mm
+4. Measure remaining distance
+5. Adjust steps = currentSteps * (commanded / actual)
+```
+
+## Input Shaping
+
+Record accelerometer data and feed into your firmware's calculator.
+
+```python
+# pseudo example
+import numpy as np
+raw = np.loadtxt('x-axis.csv', delimiter=',')
+# process ...
+```
+
+## Pressure Advance / Linear Advance
+
+Print a standardized test tower.
+
+> Document real-world values here after experimentation.

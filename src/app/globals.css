@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+
+body { font-feature-settings: 'case' on, 'rlig' on, 'calt' on; }
+
+/* Adjust prose styling */
+.prose pre code { @apply bg-transparent p-0 text-sm leading-relaxed; }
+.prose code { @apply text-[13px] px-1.5 py-0.5 rounded bg-surface border border-border; }
