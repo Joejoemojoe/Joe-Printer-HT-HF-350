@@ -46,10 +46,11 @@ function generatePostForFile(file) {
   const rel = `/uploads/${path.basename(file)}`;
   const isImg = IMG_EXT.has(ext);
   const isVid = VID_EXT.has(ext);
+  const mime = ext === '.mp4' ? 'video/mp4' : ext === '.webm' ? 'video/webm' : ext === '.ogv' ? 'video/ogg' : ext === '.mov' ? 'video/quicktime' : '';
   const embed = isImg
     ? `![${title}](${rel})`
     : isVid
-  ? `<video controls style={{ width: '100%' }} src="${rel}"></video>`
+    ? `<video controls style={{ width: '100%' }}><source src="${rel}"${mime ? ` type="${mime}"` : ''} /></video>`
     : `[Download file](${rel})`;
 
   const mdx = `---\n` +

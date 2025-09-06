@@ -29,7 +29,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       }
       return `${basePath}${encoded}`;
     };
-    const components = {
+  const components = {
       img: (props: any) => {
         const raw = props.src as string | undefined;
         const src = withBase(raw);
@@ -54,7 +54,28 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           </a>
         );
       },
-      video: (props: any) => <video {...props} src={withBase(props.src)} />,
+      video: (props: any) => {
+        const raw = props.src as string | undefined;
+        const src = withBase(raw);
+        // Determine mime type from extension
+        const ext = (raw?.split('.').pop() || '').toLowerCase();
+        const type = ext === 'mp4' ? 'video/mp4' : ext === 'webm' ? 'video/webm' : ext === 'ogv' ? 'video/ogg' : ext === 'mov' ? 'video/quicktime' : undefined;
+        // If children already include <source>, just prefix children via our 'source' override
+        if (props.children) {
+          return <video {...props} style={{ width: '100%', ...(props.style || {}) }} />;
+        }
+        return (
+          <video {...props} controls style={{ width: '100%', ...(props.style || {}) }}>
+            {src && <source src={src} {...(type ? { type } : {})} />}
+            Your browser does not support the video tag. {raw ? 'Download: ' : ''}
+            {raw && (
+              <a href={src} target="_blank" rel="noopener noreferrer">
+                {raw}
+              </a>
+            )}
+          </video>
+        );
+      },
       source: (props: any) => <source {...props} src={withBase(props.src)} />,
       a: (props: any) => <a {...props} href={withBase(props.href)} />,
     } as const;

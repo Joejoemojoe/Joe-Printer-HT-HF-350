@@ -1,6 +1,9 @@
 import Link from 'next/link';
+import ModelViewer from '@/components/ModelViewer';
+import { getFirstModel } from '@/lib/media';
 
 export default function HomePage() {
+  const model = getFirstModel();
   return (
     <div className="space-y-10 w-full">
       <section className="grid md:grid-cols-2 gap-10 items-center">
@@ -14,7 +17,22 @@ export default function HomePage() {
           </div>
         </div>
         <div className="relative">
-          <div className="aspect-video rounded-lg border border-border bg-surface flex items-center justify-center text-gray-500 text-sm">Hero Graphic / Printer Render</div>
+          <div className="aspect-video rounded-lg border border-border bg-surface overflow-hidden relative">
+            {model ? (
+              model.ext === '.stl' ? (
+                <div className="w-full h-full flex items-center justify-center text-gray-300 text-sm p-4 text-center">
+                  STL detected: Please convert STL to GLB/GLTF for web viewing. Try Blender or online converters, then place the .glb/.gltf in <code>public/models</code>.
+                </div>
+              ) : (
+                <>
+                  <ModelViewer src={model.src} />
+                  <HeroOverlay title={model.title} href={model.src} />
+                </>
+              )
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-gray-500 text-sm">Drop a .glb/.gltf into public/models or public/uploads</div>
+            )}
+          </div>
         </div>
       </section>
       <section className="grid md:grid-cols-3 gap-6">
@@ -33,6 +51,18 @@ export default function HomePage() {
         <h2>Project Philosophy</h2>
         <p>This site acts like a lightweight documentation portal and changelog for my printer platform. Content lives as Markdown/MDX files so updates are just git commits. Media (images & embedded videos) accompany detailed tuning notes so others can replicate results.</p>
       </section>
+    </div>
+  );
+}
+
+function HeroOverlay({ title, href }: { title: string; href: string }) {
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+  const encodePath = (p: string) => p.split('/').map((seg, i) => (i === 0 ? seg : encodeURIComponent(seg))).join('/');
+  const full = href.startsWith('/') ? basePath + (decodeURI(href) === href ? encodePath(href) : href) : href;
+  return (
+    <div className="absolute inset-x-0 bottom-0 p-3 flex items-center justify-between bg-gradient-to-t from-black/60 to-transparent">
+      <div className="text-sm text-white font-medium truncate">{title}</div>
+      <a href={full} className="text-xs px-2 py-1 rounded bg-surface border border-border hover:border-gray-500" target="_blank" rel="noreferrer">Download</a>
     </div>
   );
 }

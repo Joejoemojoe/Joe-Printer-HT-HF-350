@@ -16,7 +16,17 @@ export default function VideosPage() {
           {local.map(v => (
             <div key={v.src} className="rounded-lg overflow-hidden border border-border bg-surface">
               <video className="w-full" controls poster={v.poster}>
-                <source src={v.src.startsWith('/') ? basePath + (decodeURI(v.src) === v.src ? encodePath(v.src) : v.src) : v.src} />
+                <source
+                  src={v.src.startsWith('/') ? basePath + (decodeURI(v.src) === v.src ? encodePath(v.src) : v.src) : v.src}
+                  type={(() => {
+                    const ext = (v.src.split('.').pop() || '').toLowerCase();
+                    if (ext === 'mp4') return 'video/mp4';
+                    if (ext === 'webm') return 'video/webm';
+                    if (ext === 'ogv') return 'video/ogg';
+                    if (ext === 'mov') return 'video/quicktime';
+                    return undefined as any;
+                  })()}
+                />
                 Your browser does not support the video tag.
               </video>
               <div className="p-2 text-[12px] text-gray-300 border-t border-border">{v.title}</div>

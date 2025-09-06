@@ -22,14 +22,13 @@ public/       -> Static assets (images)
 
 ## Features
 
-- Fast static rendering via Next.js App Router
-- GitHub inspired dark theme & layout
-- MDX for rich content (React in docs)
-- Automatic metadata & reading time
-- Shiki highlighted code blocks
-- Videos embedding (YouTube, local, MP4)
-- Image optimization via Next/Image
 
 ## Next Steps
 
 Head to the [build guide](/docs/build-guide) to start assembling.
+
+### 3D models
+
+- Put `.glb` or `.gltf` files in `public/models/` (preferred) or `public/uploads/`.
+- The homepage hero will auto-detect the first model and render it, spinning.
+- STL (`.stl`) is not directly supported in the viewer. Please convert STL to GLB/GLTF (e.g., with Blender: File → Export → glTF 2.0) and place the converted file in `public/models/`.
