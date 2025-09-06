@@ -9,7 +9,7 @@ const MODEL_EXT = new Set(['.glb', '.gltf', '.stl']);
 
 export type GalleryItem = { src: string; alt: string };
 export type VideoItem = { src: string; title: string; poster?: string };
-export type ModelItem = { src: string; title: string; ext: string };
+export type ModelItem = { src: string; title: string; ext: string; size?: number };
 
 export function getGalleryImages(): GalleryItem[] {
   const dirs = [path.join(publicDir, 'gallery'), path.join(publicDir, 'uploads')];
@@ -51,7 +51,9 @@ export function getFirstModel(): ModelItem | null {
     for (const f of fs.readdirSync(d)) {
   const ext = path.extname(f).toLowerCase();
   if (!MODEL_EXT.has(ext)) continue;
-  return { src: `/${base}/${f}`, title: humanize(path.basename(f, ext)), ext };
+  let size: number | undefined;
+  try { size = fs.statSync(path.join(d, f)).size; } catch {}
+  return { src: `/${base}/${f}`, title: humanize(path.basename(f, ext)), ext, size };
     }
   }
   return null;
@@ -66,7 +68,9 @@ export function getAllModels(): ModelItem[] {
     for (const f of fs.readdirSync(d)) {
       const ext = path.extname(f).toLowerCase();
       if (!MODEL_EXT.has(ext)) continue;
-      items.push({ src: `/${base}/${f}`, title: humanize(path.basename(f, ext)), ext });
+  let size: number | undefined;
+  try { size = fs.statSync(path.join(d, f)).size; } catch {}
+  items.push({ src: `/${base}/${f}`, title: humanize(path.basename(f, ext)), ext, size });
     }
   }
   return items;

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import ModelViewer from '@/components/ModelViewer';
+import HeroModelSwitcher from '@/components/HeroModelSwitcher';
 import { getFirstModel } from '@/lib/media';
 
 export default function HomePage() {
@@ -16,10 +17,12 @@ export default function HomePage() {
                   STL detected: Please convert STL to GLB/GLTF for web viewing. Try Blender or online converters, then place the .glb/.gltf in <code>public/models</code>.
                 </div>
               ) : (
-                <>
-                  <ModelViewer src={model.src} />
-                  <HeroOverlay title={model.title} href={model.src} />
-                </>
+                <HeroModelSwitcher
+                  modelSrc={model.src}
+                  modelTitle={model.title}
+                  modelSizeBytes={model.size}
+                  previewPng={'/uploads/printer cad.png'}
+                />
               )
             ) : (
               <div className="w-full h-full flex items-center justify-center text-gray-500 text-sm">Drop a .glb/.gltf into public/models or public/uploads</div>
