@@ -1,0 +1,120 @@
+---
+title: Micro Tuning & Quality Diagnostics
+description: Fine-grained artifacts, root cause tables, surface finish optimization, dimensional accuracy, and controlled experiments.
+nav: 5
+---
+
+# Micro Tuning & Quality Diagnostics
+
+This guide targets the last 5-10%: subtle surface artifacts, dimensional drift, and consistency across long print batches. Use only after the main and advanced tuning passes.
+
+## 1. Controlled Change Method
+
+Never tweak multiple levers simultaneously. Structure each experiment:
+
+```
+Hypothesis -> Single Parameter Change -> Short Test Artifact -> Measure -> Accept / Revert
+```
+
+Keep a CSV or Markdown log (timestamp, parameter, old, new, result, decision). This creates traceability when regressions appear weeks later.
+
+## 2. Surface Artifact Atlas
+
+| Artifact | Visual Cue | Likely Causes | Primary Fix | Secondary Fix |
+|----------|------------|--------------|-------------|---------------|
+| Z Banding | Regular horizontal waves | Leadscrew wobble, eccentric coupler, inconsistent layer height | Align & secure couplers; check leadscrew straightness | Bed/gadget vibration isolation |
+| Ghosting | Echo of sharp corner | Accel too high, low frame stiffness, poor belt tension | Reduce accel or refine input shaping | Stiffer toolhead, lower moving mass |
+| Salmon Skin | Fine tactile ripples | Stepper interpolation artifacts or microstep nonlinearity | Switch driver mode / adjust current | Higher microstep w/ interpolation |
+| Underextrusion Blips | Random gaps | Partial clogs, inconsistent filament diameter | Cold pull / nozzle replace | Tight filament path tolerances |
+| Blobs / Zits | Dots on seam | Seam alignment & pressure release | Enable linear advance / pressure advance | Alter seam location (rear) |
+
+## 3. Dimensional Calibration (Functional Parts)
+
+Baseline legitimate mechanical accuracy before scaling models:
+
+1. Print a 30 × 30 × 30 calibration cube, 3 perimeters, 0.2 layer, 100% infill. Cool to room temp.
+2. Measure X/Y/Z with calipers (+/-0.01 mm). Record shrinkage vs model.
+3. If X/Y both off equally: flow or nozzle deflection; if X≠Y: belt tension or pulley set screw.
+4. Z error consistent layer-to-layer: verify Z steps/mm (lead vs microsteps).
+
+Avoid slicer “X/Y compensation” until physical causes addressed.
+
+## 4. Hole & Shaft Fit Strategy
+
+Printed circular holes shrink; outer pegs expand.
+
+Rules of thumb (0.4 nozzle, 0.2 layer, PLA/ABS):
+- Add +0.15-0.25 mm to hole diameters under 10 mm.
+- Subtract ~0.05-0.10 mm from press-fit shaft features.
+
+Always verify with a slot gauge or test fixture instead of tuning by feel.
+
+## 5. Layer Consistency Sampling
+
+Print a tall single-wall tower (e.g., 0.4 nozzle, 0.2 layer, 160 mm height). Use a micrometer to measure wall at 10 mm intervals. Variation >+/-3% suggests intermittent extrusion or thermal fluctuation.
+
+Investigate: filament reel friction, hotend temp oscillation (PID retune), extruder gear cleanliness.
+
+## 6. Temperature Stability Audit
+
+Record hotend temperature at 1 s intervals during a controlled 10 min print segment.
+
+```python
+# pseudo snippet
+import numpy as np
+import matplotlib.pyplot as plt
+t = np.loadtxt('hotend-log.csv', delimiter=',')
+print('Mean', t.mean(), 'Δ', t.max()-t.min())
+```
+
+Aim for +/-1C band. Wider swings: improve PID tune, add silicone sock, shield from fan blast.
+
+## 7. Filament Batch Consistency
+
+Track flow multiplier per spool. If new spool deviates >3% from baseline:
+- Measure filament diameter (8 points). Average <1.74 mm or >1.77 mm? Adjust multiplier.
+- Dry hygroscopic filament (PA/PETG) at appropriate temp.
+
+## 8. Noise & Vibration Logging
+
+Accelerometer on the frame while printing a high accel test can reveal emerging mechanical issues (bearing wear, loosening). Save baseline FFT and compare monthly.
+
+## 9. Stringing Micro Test
+
+Use a rapid two‑tower string test script. Evaluate under backlight. If near‑invisible wisps remain but functional parts are clean, stop—diminishing returns.
+
+## 10. Beacon Mesh Drift Spot Checks
+
+After adopting Beacon mesh from advanced guide:
+
+```
+1. Print large part (~70% bed area or more).
+2. Immediately re-run mesh.
+3. Compare delta vs pre-print mesh.
+4. If local deviation >0.05 mm emerged check thermal runaway, bed mounting preload, or part-induced warping.
+```
+
+## 11. Predictive Maintenance Intervals
+
+| Component | Interval | Check | Action |
+|-----------|----------|-------|--------|
+| Linear Rails | 200 h | Smooth travel | Clean & re-lube light grease |
+| Belts | 150 h | Tension / fray | Retension or replace |
+| Hotend Nozzle | 100 h (abrasive: 30 h) | Orifice wear | Replace |
+| Extruder Gears | 150 h | Tooth debris | Brush clean |
+| Probe (Beacon) | 250 h | Repeatability drift | Re-calibrate |
+
+## 12. Decision Thresholds
+
+Stop tuning and ship the part when:
+- Dimensional error <+/-0.15 mm on critical fits (unless aerospace tolerance needed)
+- Surface artifacts only visible under raking light
+- Functional strength meets test fixture baseline
+
+## Summary
+
+Micro tuning is insurance against creeping regression. Maintain structured logs, minimize guesswork, and reserve deep dives for repeatable, measurable issues.
+
+---
+
+See also: [Advanced Tuning & Beacon Mesh](/docs/advanced-tuning) • [Tuning](/docs/tuning)

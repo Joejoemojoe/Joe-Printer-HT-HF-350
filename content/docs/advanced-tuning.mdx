@@ -1,0 +1,155 @@
+---
+title: Advanced Tuning & Beacon Mesh
+description: High resolution calibration, resonance refinement, Beacon probing / meshing strategy, dynamic flow & thermal compensation.
+nav: 4
+---
+
+# Advanced Tuning & Beacon Mesh
+
+This page extends the core [Tuning](/docs/tuning) workflow with deeper mechanical diagnostics, Beacon probe best practices, micro-optimization, and long-run stability checks.
+
+> Scope: Post-baseline optimization. Complete the main tuning guide first.
+
+## 1. High Resolution Extrusion Linearity
+
+After basic flow multiplier is set at low speed, confirm linearity across volumetric rates.
+
+```
+1) Slice a single-wall tower (0.4 nozzle, 0.2 layer) with stepped speeds every 10 mm height (e.g. 40-60-80-100-120 mm/s)
+2) Keep acceleration low (<=1500) so speed plateaus are real.
+3) Measure wall thickness per band and log values.
+4) If deviation >3% at higher bands consider higher temp, larger nozzle, or high-flow hotend.
+5) Optionally implement slicer volumetric speed limit so extrusion stays within linear melt zone.
+```
+
+## 2. Beacon Probe Principles
+
+Beacon (eddy current) probes read distance to metal reference (bed or plate) with high repeatability (often <2 um). To leverage that precision:
+
+- Ensure the magnetic / metal target under the build surface is uniform (no deep recesses).
+- Avoid large temperature delta between calibration and print (thermal expansion influences readings).
+- Cable management: keep probe wire away from high current motor bundles to reduce EMI.
+
+### Basic Beacon Klipper Configuration (example skeleton)
+
+```ini
+[beacon]
+serial: /dev/serial/by-id/usb-Beacon-xyz
+x_offset: 0
+y_offset: 0
+z_offset: 0            # Calibrate
+speed: 10
+lift_speed: 10
+samples: 1
+
+[bed_mesh]
+speed: 200
+probe_count: 9,9       # High resolution grid (adjust for time)
+mesh_pps: 3,3          # Interpolation density
+algorithm: bicubic
+fade_start: 0.1
+fade_end: 10
+```
+
+> Adjust probe_count to balance resolution vs mesh time. 5x5 is often enough; 9x9 for critical flatness.
+
+### Z Offset Calibration Flow
+
+```
+1) Heat bed and nozzle to real print temps then soak 5-10 min.
+2) Run BEACON or PROBE reference self-calibration if supported.
+3) Use paper / feeler gauge or Beacon live output to dial first layer squish.
+4) Store offset (SAVE_CONFIG) and re-verify after cool / heat cycle.
+```
+
+### Beacon vs Traditional Mesh
+
+| Aspect | Beacon | Inductive / BLTouch | Manual Bed Level |
+|--------|--------|---------------------|------------------|
+| Repeatability | Excellent (um) | Moderate | N/A |
+| Thermal Drift Compensation | Possible with calibrations | Limited | None |
+| Speed (dense mesh) | High (fast sampling) | Slower | Manual |
+| Z Tilt Assist | Yes (with macros) | Yes | Manual shims |
+
+## 3. Mesh Density Strategy
+
+Dense meshes cost time. Use adaptive density:
+
+- Start coarse: 5x5.
+- Inspect height map for high frequency ripples.
+- If smooth, keep coarse (saves ~20-40 s). If local undulations (>0.05 mm near edges), increase to 7x7 or 9x9.
+- Extreme density (>11x11) rarely yields practical benefit; mechanical fix beats over-sampling.
+
+## 4. Gantry Thermal Drift Monitoring
+
+Repeat a short mesh (3×3) hot vs cold to quantify Z plane drift.
+
+```
+1) Cold mesh after power-on.
+2) Heat bed to print temp, soak 15 min, run hot mesh.
+3) Subtract surfaces to get delta map.
+4) If >0.05 mm warp appears consider frame pre-heating, bed insulation, slower first layers, or mechanical isolation.
+```
+
+## 5. Dynamic Flow Compensation (Optional)
+
+Some slicers allow per-speed flow tuning (linear advance handles pressure, not melt throughput). If high speed walls thin:
+
+- Use a calibration tower with speed bands & measure thickness.
+- Derive correction table (speed -> multiplier) and enter in slicer if supported.
+- Keep corrections modest (<5%) or solve root cause (nozzle, temp, path planning).
+
+## 6. Resonance Refinement
+
+After initial input shaping, fine tune:
+
+- Run resonance test with loaded toolhead (fan ON) to include real mass airflow effects.
+- Compare spectrums: confirm dominant peaks remain suppressed.
+- Evaluate multi-axis shaper vs per-axis if firmware supports difference.
+- Validate on a ringing test print at target accel (e.g. 12000-15000 mm/s^2).
+
+## 7. Micro Step Integrity & Motor Current
+
+Ringing or harsh motion at moderate accel can be electrical:
+
+- Verify RMS current not excessive (skip heat vs torque tradeoff). Typical NEMA17: 0.5-0.8x rated.
+- Ensure stealthchop vs spreadCycle mode choice matches strategy (spreadCycle for higher accel corners).
+- Re-tension belts after current adjustment (torque changes tension feel).
+
+## 8. Beacon Assisted Gantry Squaring Macro (Concept)
+
+```ini
+[gcode_macro SQUARE_GANTRY]
+# Probe 4 bed corners, compute plane tilt, adjust independent Z motors
+gcode:
+  G28
+  BED_MESH_CLEAR
+  Z_TILT_ADJUST
+  BED_MESH_CALIBRATE
+```
+
+Run after significant mechanical change or transport.
+
+## 9. First Layer Uniformity Heat Map
+
+Export mesh height data, normalize, and plot to visually confirm improvements across hardware changes. Store historical CSVs for regression detection.
+
+## 10. Long Print Stability Checklist
+
+| Interval | Check | Action |
+|----------|-------|--------|
+| 5 h | Corner ringing emerging? | Lower accel 10% or verify shaper | 
+| 10 h | Z banding new? | Inspect couplers, leadscrew lube |
+| 20 h | Beacon offset drift? | Re-probe & compare to baseline |
+
+## 11. Documentation Habit
+
+Append advanced parameters to your tuning log: mesh variance (min/max), probe stdev, shaper config, high speed wall thickness deviation, dynamic flow entries.
+
+## Summary
+
+Beacon enables repeatable, data-driven Z and mesh modeling; use it to *reduce* compensation, not mask mechanical faults. Stop when marginal gains consume disproportionate print time.
+
+---
+
+See also: [Tuning](/docs/tuning) • [Micro Tuning](/docs/micro-tuning)

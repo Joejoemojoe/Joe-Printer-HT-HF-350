@@ -1,36 +1,154 @@
 ---
- title: Tuning
- description: Extrusion, motion, resonance & calibration methods.
- nav: 3
+title: Tuning
+description: "Systematic calibration workflow: mechanics, extrusion, flow, linear advance, resonance, temperatures, and quality validation."
+nav: 3
 ---
 
-# Tuning
+# Comprehensive Tuning Guide
 
-Good mechanical assembly reduces firmware compensation required.
+This guide lays out a pragmatic order of operations for dialing in a high‐performance CoreXY / Voron‑style printer. The goal: eliminate gross mechanical error first, then converge on consistent extrusion and dynamic motion parameters with minimal iterative backtracking.
 
-## Flow Calibration
+> Philosophy: Measure → Adjust → Lock‑In → Document. Do not chase cosmetic perfection before foundation steps (squareness, belt symmetry, temps) are stable.
+
+## 1. Mechanical Baseline
+
+Checklist (perform with machine cold & powered off):
+
+- Frame squareness: diagonals within ≤0.5 mm on large panels.
+- Gantry coplanarity: rails flush, no rocking; shim only if >0.1 mm gap.
+- Belt path symmetry: equal tooth count each loop; tension both sides by frequency (pluck) within ±5 Hz.
+- Linear rail smoothness: no gritty spots; relube if dry or draggy.
+- Fastener torque: snug, not crushed; recheck after 2 heat cycles.
+
+Only after these are correct move to motion and extrusion calibration.
+
+## 2. Extruder Steps (E-Steps)
+
+Purpose: Make commanded filament advance match reality. Perform at stable real print temperature & with filament that is representative (not brittle old stock).
+
+Procedure:
 
 ```text
-1. Heat nozzle to print temp
-2. Mark filament 120mm above extruder entry
-3. Extrude 100mm
-4. Measure remaining distance
-5. Adjust steps = currentSteps * (commanded / actual)
+1. Heat hotend to target (e.g. 240°C for ASA test) and wait 2–3 min soak.
+2. Mark filament at 120 mm above extruder entry using a fine marker.
+3. Command 100 mm extrusion at slow feed (e.g. 2 mm/s) to avoid skip.
+4. Measure remaining distance to the reference point.
+5. Actual moved = 120 - remaining.
+6. New steps/mm = current * (commanded / actual).
+7. Update firmware, store, power cycle, re‑verify (target within ±0.2 mm).
 ```
 
-## Input Shaping
+If using a gearing change or different drive gears, jump directly to measuring—do not copy someone else’s value unverified.
 
-Record accelerometer data and feed into your firmware's calculator.
+## 3. Filament Flow (Volumetric / Multiplier)
 
-```python
-# pseudo example
-import numpy as np
-raw = np.loadtxt('x-axis.csv', delimiter=',')
-# process ...
+Even with perfect e‑steps, melt & diameter variance shift effective flow. Calibrate per material family (PLA, PETG, ABS/ASA, Nylon, CF blends).
+
+Test method (Single Wall Cube):
+
+```text
+1. Slice a 0 top / 0 infill cube: 40 × 40 × 40 mm, 1 perimeter, layer height 0.2 mm.
+2. Disable external modifiers (pressure advance, linear advance, flow overrides).
+3. Print slowly (30–40 mm/s walls) at target temperature.
+4. Measure wall thickness at 8 evenly spaced points; average.
+5. Expected thickness = nozzle_diameter.
+6. New flow multiplier = old_multiplier * (expected / measured).
+7. Reprint to confirm within ±1%.
 ```
 
-## Pressure Advance / Linear Advance
+Log results in a table (material, brand, color, temp, multiplier). Re‑validate when changing batch or after major firmware updates.
 
-Print a standardized test tower.
+## 4. Temperature Towers & Heat Creep Check
 
-> Document real-world values here after experimentation.
+Print a temperature tower for each new filament family. Select the temperature band giving:
+
+- Layer fusion (no delamination on flex)
+- Minimal stringing
+- Clean bridging
+
+Record: brand, color, chosen temp, enclosure temp (if enclosed), fan %.
+
+## 5. Pressure / Linear Advance (Firmware Compensation)
+
+Purpose: Pre‑emptively reduce corner blobbing & infill to wall over‑extrusion by modeling pressure lag in molten filament.
+
+Workflow:
+
+```text
+1. Enable pressure/linear advance feature in firmware (K-factor).
+2. Slice a standardized calibration pattern (stepped speed lines or tower) with consistent flow (keep multiplier fixed from step 3).
+3. Print series sweeping K (e.g. 0.00 → 0.10 in 0.01 increments for direct drive; 0.00 → 0.30 for bowden).
+4. Select value with: sharp corners (no over-rounded), no under‑extruded line starts, minimal ripple.
+5. Store final K and annotate in your tuning log.
+```
+
+Re‑tune only if: nozzle size change, major filament viscosity change, or extruder mechanical revision.
+
+## 6. Resonance / Input Shaping
+
+Measuring vibration allows higher acceleration without ringing.
+
+Options:
+
+- Accelerometer (recommended): Attach properly oriented sensor, run firmware resonance probe for X & Y.
+- Test prints: Print ringing towers with incremental accel to visually map onset frequencies (less precise).
+
+If using accelerometer: feed CSV into firmware’s analyzer to generate suggested shaper (e.g. MZV, EI, 2HUMP_EI). Validate with a second pass after applying.
+
+Target: Eliminate noticeable ghosting while retaining acceptable accel (e.g. 8–12k mm/s² for rigid CoreXY frames).
+
+## 7. Retraction & Stringing
+
+After advance + flow stable, dial retraction:
+
+```text
+Direct drive typical: 0.4–0.8 mm at 30–50 mm/s
+Lightweight bowden: 1.2–2.0 mm at 30–40 mm/s
+```
+
+Use a multi‑pillar string test; adjust temperature down slightly if fine hairs persist after optimal retraction.
+
+## 8. Cooling & Overhang Validation
+
+Print an overhang test (every 5°) and a bridging test. Adjust part cooling fan curve (firmware or slicer overrides) so that:
+
+- Critical overhang limit (no severe droop) reached at design goal (≥60° typical).
+- Bridges remain flat with minimal sag.
+
+Document fan % and any specialized duct orientation changes.
+
+## 9. First Layer & Bed Mesh Verification
+
+Run bed mesh, inspect deviation map (aim for ≤±0.05 mm after tramming). Print a first layer test grid; adjust Z offset until even satin squish without elephant foot.
+
+## 10. Final Validation Print
+
+Choose a composite benchmark (Benchy, calibration plate, mechanical tolerance test). Record:
+
+- Print time, accel settings
+- Surface artifacts remaining (if any)
+- Dimensional results (X/Y cube, hole diameters)
+
+Only adjust earlier steps if systematic defect (not isolated random blob) appears.
+
+## Data Logging Template
+
+| Date | Material | Nozzle | Temp | Flow Mult | K / Advance | Retraction | Accel (X/Y) | Shaper | Notes |
+|------|----------|--------|------|-----------|-------------|------------|------------|--------|-------|
+| 2025-09-10 | ASA (Generic Black) | 0.4 | 245°C | 0.97 | 0.045 | 0.6 @ 40 mm/s | 10000 | MZV | Baseline |
+
+## Troubleshooting Quick Table
+
+| Symptom | Likely Cause | Fix Priority |
+|---------|--------------|--------------|
+| Hollow walls / undersize | Flow low or temp too low | Recheck e‑steps & flow, then raise 5°C |
+| Corner bulges | Advance K too low or flow high | Tune K, verify multiplier |
+| Ringing / ghosting | Accel too high or belts uneven | Balance belts, apply shaping |
+| Stringing | Temp high / retraction low | Lower 5–10°C, tune retraction |
+| Layer shifts | Loose pulley / skipped steps | Tighten set screws, reduce accel |
+
+## Summary
+
+Lock values in firmware & slicer profiles once stable. Keep a versioned CHANGELOG of tuning changes to correlate print quality shifts with parameter edits.
+
+Happy printing — iterate with data, not guesswork.

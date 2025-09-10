@@ -15,6 +15,8 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://example.com')
 };
 
+const BUILD_YEAR = new Date().getFullYear();
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
   const model = getFirstModel();
@@ -29,8 +31,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <link rel="dns-prefetch" href="//unpkg.com" />
         <link rel="preconnect" href="https://unpkg.com" crossOrigin="anonymous" />
   {/* Intentionally do not preload the 3D model to keep first-load data small. */}
+        {/* Early inline theme script to avoid class mismatch */}
+        <script
+          dangerouslySetInnerHTML={{ __html: `(()=>{try{const s=localStorage.getItem('theme');if(s==='dark'||(!s&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');}else{document.documentElement.classList.remove('dark');}}catch(e){}})();` }}
+        />
       </head>
-      <body className="font-sans bg-ink text-gray-200 min-h-screen flex flex-col">
+      <body className="font-sans bg-ink text-gray-200 min-h-screen flex flex-col" suppressHydrationWarning>
   {/* Load model-viewer early so the 3D model can render ASAP */}
   <Script id="model-viewer-cdn" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js" type="module" strategy="beforeInteractive" />
         <header className="border-b border-border bg-surface/80 backdrop-blur supports-[backdrop-filter]:bg-surface/60 sticky top-0 z-40">
@@ -44,7 +50,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <Link className="hover:text-white" href="/blog">Updates</Link>
               <Link className="hover:text-white" href="/about">About</Link>
               <Link className="hover:text-white" href="/search">Search</Link>
-              <a className="hover:text-white" href="https://github.com/USERNAME/REPO" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+              <a className="hover:text-white" href="https://github.com/Joejoemojoe/Joe-Printer-HT-HF-350" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
             </nav>
             <div className="ml-auto flex items-center gap-4">
               <ThemeToggle />
@@ -54,14 +60,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <main className="flex-1 mx-auto w-full max-w-6xl px-4 py-8 flex gap-8">
           {children}
         </main>
-        <footer className="border-t border-border py-6 text-center text-xs text-gray-400">
-          © {new Date().getFullYear()} Joe Printer Project. Built with Next.js.
+        <footer className="border-t border-border py-6 text-center text-xs text-gray-400" suppressHydrationWarning>
+          © {BUILD_YEAR} Joe Printer Project. Built with Next.js.
         </footer>
-        <script dangerouslySetInnerHTML={{ __html: `
-          (function(){
-            try { const s = localStorage.getItem('theme'); if(s==='dark'||(!s&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');} } catch(e) {}
-          })();
-        `}} />
       </body>
     </html>
   );

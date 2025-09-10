@@ -79,17 +79,18 @@ export default function BlogIndex() {
                               </div>
                             );
                           }
-                          return <img src={url} alt={m.alt || p.meta.title} className="w-20 h-16 object-cover rounded border border-border shrink-0" />;
+                          // Eagerly load update thumbnails for immediate visual display
+                          return <img src={url} alt={m.alt || p.meta.title} className="w-20 h-16 object-cover rounded border border-border shrink-0" loading="eager" fetchPriority="high" />;
                         }
                         if (m.type === 'video') {
                           const poster = m.poster ? withBase(m.poster) : '';
                           if (poster) {
-                            return <img src={poster} alt={p.meta.title} className="w-20 h-16 object-cover rounded border border-border shrink-0" />;
+                            return <img src={poster} alt={p.meta.title} className="w-20 h-16 object-cover rounded border border-border shrink-0" loading="eager" fetchPriority="high" />;
                           }
                           const ext = (m.url.split('.').pop() || '').toLowerCase();
                           const type = ext === 'mp4' ? 'video/mp4' : ext === 'webm' ? 'video/webm' : ext === 'ogv' ? 'video/ogg' : ext === 'mov' ? 'video/quicktime' : undefined;
                           return (
-                            <video className="w-20 h-16 object-cover rounded border border-border shrink-0" muted playsInline loop preload="metadata">
+                            <video className="w-20 h-16 object-cover rounded border border-border shrink-0" muted playsInline loop preload="auto" autoPlay>
                               <source src={url} {...(type ? { type } : {})} />
                             </video>
                           );
