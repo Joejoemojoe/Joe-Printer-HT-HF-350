@@ -8,9 +8,9 @@ export default function HomePage() {
   return (
   <div className="space-y-20 w-full relative">
       {/* Glow blobs */}
-      <div className="glow-blob blob-violet w-[520px] h-[520px] -top-40 -left-40 parallax-layer" />
-      <div className="glow-blob blob-cyan w-[480px] h-[480px] top-20 -right-40 parallax-layer" />
-      <div className="glow-blob blob-coral w-[560px] h-[560px] top-[420px] left-1/2 -translate-x-1/2 parallax-layer" />
+  <div className="glow-blob blob-violet blob-anim-a w-[520px] h-[520px] -top-40 -left-40 parallax-layer" />
+  <div className="glow-blob blob-cyan blob-anim-b w-[480px] h-[480px] top-20 -right-40 parallax-layer" />
+  <div className="glow-blob blob-coral blob-anim-c w-[560px] h-[560px] top-[420px] left-1/2 -translate-x-1/2 parallax-layer" />
 
       <section className="grid md:grid-cols-2 gap-14 items-center relative pt-4">
         {/* Model first in DOM for faster paint on mobile; order swapped on desktop */}

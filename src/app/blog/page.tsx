@@ -55,64 +55,41 @@ export default function BlogIndex() {
     return null;
   };
   return (
-    <div className="w-full">
-      <h1 className="text-3xl font-bold mb-6 text-white">Updates & Changelog</h1>
-      <div className="space-y-8">
+    <div className="w-full space-y-12">
+      <header className="space-y-2">
+        <h1 className="page-heading">Update Log</h1>
+        <p className="page-intro text-sm max-w-prose">Chronological log of platform changes, uploads and calibration milestones. Minimal presentation—optimized for quick diff style scanning.</p>
+      </header>
+      <div className="space-y-12">
         {groups.map(g => (
-          <section key={g.key} className="space-y-3">
-            <h2 className="text-xl font-semibold text-white">{g.label}</h2>
-            <ul className="space-y-3">
-              {g.items.map(p => (
-                <li key={p.meta.slug}>
-                  <Link href={`/blog/${p.meta.slug}/`} className="block p-4 rounded-md border border-border bg-surface hover:border-gray-500 transition">
-                    <div className="flex items-center gap-3">
-                      {(() => {
-                        const m = firstMedia(p.content);
-                        if (!m) return null;
-                        const url = withBase(m.url);
-                        if (m.type === 'image') {
-                          const isHeic = /\.heic$/i.test(m.url);
-                          if (isHeic) {
-                            return (
-                              <div className="w-20 h-16 flex items-center justify-center rounded border border-border bg-ink text-[10px] text-gray-300 shrink-0">
-                                HEIC file
-                              </div>
-                            );
-                          }
-                          // Eagerly load update thumbnails for immediate visual display
-                          return <img src={url} alt={m.alt || p.meta.title} className="w-20 h-16 object-cover rounded border border-border shrink-0" loading="eager" fetchPriority="high" />;
-                        }
-                        if (m.type === 'video') {
-                          const poster = m.poster ? withBase(m.poster) : '';
-                          if (poster) {
-                            return <img src={poster} alt={p.meta.title} className="w-20 h-16 object-cover rounded border border-border shrink-0" loading="eager" fetchPriority="high" />;
-                          }
-                          const ext = (m.url.split('.').pop() || '').toLowerCase();
-                          const type = ext === 'mp4' ? 'video/mp4' : ext === 'webm' ? 'video/webm' : ext === 'ogv' ? 'video/ogg' : ext === 'mov' ? 'video/quicktime' : undefined;
-                          return (
-                            <video className="w-20 h-16 object-cover rounded border border-border shrink-0" muted playsInline loop preload="auto" autoPlay>
-                              <source src={url} {...(type ? { type } : {})} />
-                            </video>
-                          );
-                        }
-                        return (
-                          <div className="w-20 h-16 flex items-center justify-center rounded border border-border bg-ink text-[10px] text-gray-300 shrink-0">
-                            File
-                          </div>
-                        );
-                      })()}
-                      <div className="min-w-0">
-                        <p className="font-medium text-white truncate">{p.meta.title}</p>
-                        <div className="flex flex-wrap gap-2 text-[11px] mt-1 text-gray-400">
-                          {p.meta.date && <span className="shrink-0">{p.meta.date}</span>}
-                          {p.meta.tags && p.meta.tags.map(t => <span key={t} className="px-1.5 py-0.5 rounded bg-ink border border-border">{t}</span>)}
-                        </div>
-                        {p.meta.description && <p className="text-xs text-gray-400 mt-2 line-clamp-2">{p.meta.description}</p>}
+          <section key={g.key} className="space-y-2">
+            <h2 className="text-lg font-semibold text-gray-200 tracking-tight border-b border-border/60 pb-1">{g.label}</h2>
+            <ul className="divide-y divide-border/40 border border-border/50 rounded-md bg-transparent">
+              {g.items.map(p => {
+                const media = firstMedia(p.content);
+                const mediaIcon = media ? (media.type === 'video' ? '🎞️' : media.type === 'image' ? '🖼️' : '📄') : '•';
+                return (
+                  <li key={p.meta.slug} className="p-3 md:p-4 hover:bg-surface/40 transition-colors group">
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2 text-[11px] text-gray-500">
+                        {p.meta.date && <span className="font-mono">{p.meta.date}</span>}
+                        <span className="opacity-60">{mediaIcon}</span>
+                        {p.meta.tags && p.meta.tags.length > 0 && (
+                          <span className="flex flex-wrap gap-1">{p.meta.tags.map(t => <span key={t} className="px-1 py-0.5 rounded border border-border/60 text-[10px] text-gray-400 tracking-wide">{t}</span>)}</span>
+                        )}
                       </div>
+                      <Link href={`/blog/${p.meta.slug}/`} className="font-medium text-white leading-snug hover:underline underline-offset-2 decoration-border/70">
+                        {p.meta.title}
+                      </Link>
+                      {p.meta.description && (
+                        <p className="text-xs text-gray-400 leading-relaxed line-clamp-3">
+                          {p.meta.description}
+                        </p>
+                      )}
                     </div>
-                  </Link>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           </section>
         ))}

@@ -38,24 +38,19 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       return `https://raw.githubusercontent.com/${owner}/${repo}/main/public/uploads/${enc}`;
     };
     const components = {
-      img: (props: any) => {
-        const raw = props.src as string | undefined;
-        const src = withBase(raw);
-        return <img {...props} src={src} style={{ maxWidth:'100%', height:'auto', borderRadius:6, ...(props.style||{}) }} />;
-      },
+      img: (props: any) => <img {...props} src={withBase(props.src)} style={{ maxWidth:'100%', height:'auto', ...(props.style||{}) }} />,
       video: (props: any) => {
         const raw = props.src as string | undefined;
-        const src = withBase(raw);
         const ext = (raw?.split('.').pop() || '').toLowerCase();
         const type = ext==='mp4'?'video/mp4': ext==='webm'?'video/webm': ext==='ogv'?'video/ogg': ext==='mov'?'video/quicktime': undefined;
         return (
-          <video {...props} controls style={{ width:'100%', borderRadius:8, ...(props.style||{}) }}>
-            {src && <source src={src} {...(type?{type}:{})} />}
+          <video {...props} controls style={{ width:'100%', ...(props.style||{}) }}>
+            {raw && <source src={withBase(raw)} {...(type?{type}:{})} />}
           </video>
         );
       },
-      source: (props:any) => <source {...props} src={withBase(props.src)} />,
-      a: (props:any) => <a {...props} href={withBase(props.href)} />
+      source: (p:any)=> <source {...p} src={withBase(p.src)} />,
+      a:(p:any)=><a {...p} href={withBase(p.href)} />
     } as const;
     return (
       <article className="prose prose-invert max-w-none">

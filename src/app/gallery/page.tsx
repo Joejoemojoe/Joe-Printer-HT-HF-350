@@ -16,11 +16,11 @@ export default function GalleryPage() {
   const images = local.length ? local : sample;
   return (
     <div className="space-y-8 w-full">
-      <h1 className="text-3xl font-bold text-white">Gallery</h1>
-      <p className="text-sm text-gray-400 max-w-prose">Add photos to <code>public/gallery</code> (jpg, png, webp, gif) or leave remote samples.</p>
+      <h1 className="page-heading">Gallery</h1>
+      <p className="page-intro text-sm max-w-prose">Add photos to <code>public/gallery</code> (jpg, png, webp, gif) or use remote samples.</p>
       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
     {images.map(img => (
-          <div key={img.src} className="group relative border border-border rounded-md overflow-hidden bg-surface">
+          <div key={img.src} className="group relative border border-border/60 rounded-md overflow-hidden subtle-card subtle-card-hover">
       <Image src={`${img.src.startsWith('/') ? basePath + (decodeURI(img.src) === img.src ? encodePath(img.src) : img.src) : img.src}`} alt={img.alt} width={400} height={260} className="object-cover w-full h-48 group-hover:scale-105 transition" />
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-2 text-[11px] text-gray-300">
               {img.alt}

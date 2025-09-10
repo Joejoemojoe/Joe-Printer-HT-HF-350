@@ -34,10 +34,26 @@ html, body { background: var(--bg-root); }
 	-webkit-backdrop-filter: blur(6px);
 }
 
+/* Subtle variant cards for inner pages */
+.subtle-card { background: rgba(22,24,30,0.55); border:1px solid #262c33; border-radius: var(--radius-card); }
+.subtle-card-hover:hover { border-color:#343b44; }
+
+.page-heading { font-size:40px; line-height:1.1; font-weight:800; background:linear-gradient(90deg,#c8d1dc,#8f9aa7); -webkit-background-clip:text; color:transparent; }
+.page-intro { color:#9da7b3; }
+
 .glow-blob { position:absolute; border-radius:50%; filter:blur(70px); opacity:.35; pointer-events:none; mix-blend-mode:screen; }
 .blob-violet { background: radial-gradient(circle at 30% 30%, #7c6cff55, transparent 70%); }
 .blob-cyan { background: radial-gradient(circle at 70% 50%, #00e0ff55, transparent 70%); }
 .blob-coral { background: radial-gradient(circle at 50% 70%, #ff7c8b55, transparent 75%); }
+
+@media (prefers-reduced-motion: no-preference) {
+	@keyframes blobFloatA { 0%{transform:translate3d(0,0,0) scale(1);} 50%{transform:translate3d(24px,-28px,0) scale(1.05);} 100%{transform:translate3d(0,0,0) scale(1);} }
+	@keyframes blobFloatB { 0%{transform:translate3d(0,0,0) scale(1);} 50%{transform:translate3d(-30px,18px,0) scale(1.04);} 100%{transform:translate3d(0,0,0) scale(1);} }
+	@keyframes blobFloatC { 0%{transform:translate3d(0,0,0) scale(1);} 50%{transform:translate3d(10px,22px,0) scale(1.06);} 100%{transform:translate3d(0,0,0) scale(1);} }
+	.blob-anim-a { animation: blobFloatA 22s var(--ease-smooth) infinite; }
+	.blob-anim-b { animation: blobFloatB 28s var(--ease-smooth) infinite; }
+	.blob-anim-c { animation: blobFloatC 26s var(--ease-smooth) infinite; }
+}
 
 @media (prefers-reduced-motion: no-preference) {
 	.parallax-layer { transition: transform 600ms var(--ease-smooth); will-change: transform; }
@@ -69,6 +85,10 @@ html, body { background: var(--bg-root); }
 
 .underline-heading { position:relative; padding-bottom:.5rem; }
 .underline-heading:after { content:""; position:absolute; left:0; bottom:0; width:48px; height:2px; background:linear-gradient(90deg,var(--accent-violet),var(--accent-cyan)); border-radius:2px; }
+
+/* Page transition fade */
+@keyframes pageFadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+.page-fade-enter { animation: pageFadeIn .55s var(--ease-smooth); }
 
 /* Adjust prose styling */
 .prose pre code { @apply bg-transparent p-0 text-sm leading-relaxed; }

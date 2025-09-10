@@ -9,12 +9,12 @@ export default function VideosPage() {
     .join('/');
   return (
     <div className="space-y-8 w-full">
-      <h1 className="text-3xl font-bold text-white">Videos</h1>
-      <p className="text-sm text-gray-400 max-w-prose">Add video files to <code>public/videos</code> (mp4, webm, ogv) or paste YouTube IDs below.</p>
+      <h1 className="page-heading">Videos</h1>
+      <p className="page-intro text-sm max-w-prose">Add video files to <code>public/videos</code> (mp4, webm, ogv) or embed external sources.</p>
       {local.length > 0 ? (
         <div className="grid md:grid-cols-2 gap-6">
           {local.map(v => (
-            <div key={v.src} className="rounded-lg overflow-hidden border border-border bg-surface">
+            <div key={v.src} className="rounded-lg overflow-hidden border border-border/60 subtle-card subtle-card-hover transition">
               <video className="w-full" controls poster={v.poster}>
                 <source
                   src={v.src.startsWith('/') ? basePath + (decodeURI(v.src) === v.src ? encodePath(v.src) : v.src) : v.src}
@@ -36,7 +36,7 @@ export default function VideosPage() {
       ) : (
         <div className="grid md:grid-cols-2 gap-6">
           {["dQw4w9WgXcQ","9bZkp7q19f0"].map(id => (
-            <div key={id} className="aspect-video rounded-lg overflow-hidden border border-border bg-surface">
+            <div key={id} className="aspect-video rounded-lg overflow-hidden border border-border/60 subtle-card subtle-card-hover transition">
               <iframe
                 className="w-full h-full"
                 src={`https://www.youtube.com/embed/${id}`}

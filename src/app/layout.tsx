@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     : null;
   const modelType = model?.ext === '.gltf' ? 'model/gltf+json' : model?.ext === '.glb' ? 'model/gltf-binary' : undefined;
   return (
-    <html lang="en" className="dark">
+  <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="dns-prefetch" href="//unpkg.com" />
         <link rel="preconnect" href="https://unpkg.com" crossOrigin="anonymous" />
@@ -48,6 +48,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <Link className="hover:text-white" href="/models">Models</Link>
               <Link className="hover:text-white" href="/gallery">Gallery</Link>
               <Link className="hover:text-white" href="/blog">Updates</Link>
+              <Link className="hover:text-white" href="/stream">Feed</Link>
               <Link className="hover:text-white" href="/about">About</Link>
               <Link className="hover:text-white" href="/search">Search</Link>
               <a className="hover:text-white" href="https://github.com/Joejoemojoe/Joe-Printer-HT-HF-350" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
@@ -57,7 +58,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </div>
           </div>
         </header>
-        <main className="flex-1 mx-auto w-full max-w-6xl px-4 py-8 flex gap-8">
+        <main className="flex-1 mx-auto w-full max-w-6xl px-4 py-8 flex gap-8 page-fade-enter">
           {children}
         </main>
         <footer className="border-t border-border py-6 text-center text-xs text-gray-400" suppressHydrationWarning>
