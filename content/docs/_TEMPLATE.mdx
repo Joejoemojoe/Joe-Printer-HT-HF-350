@@ -1,7 +1,69 @@
 ---
- title: Your doc title
- description: Short description
- nav: 10
+title: Documentation Workflow
+description: How updates, media, and docs are structured in this repo.
+nav: 7
 ---
 
-Write your documentation page in MDX. Use headings (##) for structure.
+# Documentation Workflow
+
+This project keeps documentation and updates close to the hardware changes. Docs live in `content/docs/` and update posts live in `content/blog/`. Both are MDX so text and media can be versioned together.
+
+## When to add a doc page
+
+Add a doc page when you need stable guidance or reference material:
+
+- Build sequence or assembly notes
+- Calibration steps that you repeat often
+- A checklist or troubleshooting reference
+
+Docs are ordered by the `nav` field in the front matter. Lower numbers appear first.
+
+## When to add an update post
+
+Add a blog update when you want a time stamped record of progress:
+
+- Photos of frame, gantry, wiring, or parts
+- Short videos of the toolhead or motion tests
+- Notes tied to a specific day or hardware change
+
+Updates appear on both the Update Log and the Live Feed.
+
+## Media placement
+
+Use these folders for media so the site can reference them consistently:
+
+- Photos and videos: `public/uploads/`
+- Rendered models: `public/models/`
+- Gallery assets: `public/gallery/`
+
+In MDX, use `/uploads/...` paths so the routes are stable.
+
+## Recommended file names
+
+Keep file names descriptive and consistent so the feed is easy to scan:
+
+- Use clear terms like `printer-frame.JPG` or `toolhead-showcase.mp4`.
+- Avoid very long names that are hard to link or read.
+- If a file name must keep spaces, the site will still handle it.
+
+## Suggested update structure
+
+Use the following outline for update posts:
+
+```
+Title
+Short description
+Summary paragraph
+Display media (image or video)
+Next steps
+```
+
+This makes it easy to scan progress and understand what changed.
+
+## Cross linking
+
+Use docs to link to updates that illustrate a step, and use updates to link back to the docs that explain the method. This keeps the information both searchable and visual.
+
+## Next steps
+
+If you have a new subsystem or tuning procedure, add a doc page first. If you have a new photo or video, add an update post and link it back to the relevant doc.
