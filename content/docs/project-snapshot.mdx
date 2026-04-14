@@ -14,6 +14,38 @@ This project follows a Voron 2.4 style CoreXY layout with a rigid 2020 extrusion
 
 See the broader architecture notes in [Voron 2.4 Style CoreXY Printer Overview](/docs/voron-24-style-printer).
 
+## Goals and scope
+
+The goal is a stable, repeatable, high flow printer that can be tuned methodically. The site is built so every update, photo, and calibration note can live next to the mechanical changes that caused it. This keeps the build log actionable: when quality changes, the reason is traceable.
+
+Key scope points:
+
+- Enclosed CoreXY structure for temperature control and stiffness.
+- High flow toolhead and hotend choices for real throughput, not just travel speed.
+- A tuning pipeline that goes from mechanical sanity to fine surface diagnostics.
+
+## Hardware highlights
+
+The updates capture a few notable hardware decisions. These are referenced as they appear in the build photos and videos.
+
+- Toolhead materials include PEEK parts and a titanium core for heat tolerance and rigidity.
+- Mosquito Magnum hotend selected for high flow operation.
+- 5015 blower testing for part cooling balance and overhang performance.
+- Beacon eddy current probe mount CAD for precise Z reference and mesh accuracy.
+
+## Build flow in practice
+
+The build order shown in the updates follows a stable progression:
+
+1) Square and validate the frame.
+2) Install the gantry and validate smooth motion travel.
+3) Prep and mount rails, then stage motors and pulleys.
+4) Assemble the toolhead and test cooling path behavior.
+5) Route wiring and lock in harness strain relief.
+6) Start calibration prints only after the above is stable.
+
+This keeps mechanical issues from hiding inside later tuning results.
+
 ## Documented build milestones
 
 Based on the photo and video updates, these milestones are already captured:
@@ -39,6 +71,15 @@ The tuning flow used throughout the docs is layered from coarse to fine:
 3) Beacon mesh strategy and thermal drift checks. See [Advanced Tuning and Beacon Mesh](/docs/advanced-tuning).
 4) Surface finish, dimensional accuracy, and controlled experiments. See [Micro Tuning and Quality Diagnostics](/docs/micro-tuning).
 
+## What to measure
+
+The logs and guides consistently prioritize the same measurements:
+
+- Frame squareness and gantry coplanarity before any extrusion tuning.
+- Belt symmetry and rail smoothness before input shaping runs.
+- First layer consistency and mesh repeatability before chasing surface finish.
+- Small, controlled experiments with only one variable changed at a time.
+
 ## Media index
 
 If you want to browse the visuals quickly, start with these update posts:
@@ -55,3 +96,5 @@ If you want to browse the visuals quickly, start with these update posts:
 ## Next steps
 
 Follow the existing build guide and run the tuning sequence once the machine is fully assembled. Each update post includes the next action checklist used during the build: verify torque, confirm belt tension and tram, then proceed to calibration prints.
+
+If you are new to the project, start with the build guide, then read the tuning guide top to bottom before applying advanced mesh or micro tuning procedures. The current updates are focused on hardware readiness; upcoming work should show calibration outputs and consistency checks.

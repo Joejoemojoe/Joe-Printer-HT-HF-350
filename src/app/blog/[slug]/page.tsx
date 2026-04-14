@@ -43,9 +43,10 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         const raw = props.src as string | undefined;
         const ext = (raw?.split('.').pop() || '').toLowerCase();
         const type = ext==='mp4'?'video/mp4': ext==='webm'?'video/webm': ext==='ogv'?'video/ogg': ext==='mov'?'video/quicktime': undefined;
+        const hasChildren = props.children != null;
         return (
           <video {...props} controls style={{ width:'100%', ...(props.style||{}) }}>
-            {raw && <source src={withBase(raw)} {...(type?{type}:{})} />}
+            {hasChildren ? props.children : (raw && <source src={withBase(raw)} {...(type?{type}:{})} />)}
           </video>
         );
       },
