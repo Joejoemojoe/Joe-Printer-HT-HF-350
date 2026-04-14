@@ -1,0 +1,57 @@
+---
+title: Project Snapshot
+description: Current build status and hardware highlights from documented updates.
+nav: 6
+---
+
+# Project Snapshot
+
+This page summarizes the Joe Printer HT HF 350 build using the existing docs and update posts. It is meant as a quick orientation before diving into the build guide or tuning references.
+
+## Platform baseline
+
+This project follows a Voron 2.4 style CoreXY layout with a rigid 2020 extrusion frame and a Z moving gantry. The docs emphasize a stationary bed, linear rails on all axes, and Klipper firmware for input shaping, pressure advance, and macro driven workflow.
+
+See the broader architecture notes in [Voron 2.4 Style CoreXY Printer Overview](/docs/voron-24-style-printer).
+
+## Documented build milestones
+
+Based on the photo and video updates, these milestones are already captured:
+
+- Frame alignment and early structure validation: [Printer Frame](/blog/2025-09-06-upload-printer-frame-jpg)
+- Gantry installation progress: [Printer With Gantry On](/blog/2025-09-06-upload-printer-with-gantry-on-jpg)
+- Gantry design iteration in CAD: [Gantry CAD for AWD](/blog/2025-09-06-upload-gantry-cad-for-awd)
+- Linear rail cleaning and lubrication: [Lubed and Dried Linear Rails](/blog/2025-09-06-upload-lubed-and-dried-linear-rails-jpg)
+- Motors staged for installation: [Motors](/blog/2025-09-06-upload-motors-jpg)
+- Printed parts batch ready: [Printed Parts](/blog/2025-09-06-upload-printed-parts-for-printer-jpg)
+- Toolhead iteration (PEEK parts and titanium core): [Toolhead Printed Out of PEEK](/blog/2025-09-06-upload-toolhead-printed-out-of-peek) and [Titanium Core for Holding Toolhead](/blog/2025-09-06-upload-titanium-core-for-holding-toolhead)
+- Hotend selection (high flow focus): [Mosquito Magnum Arrived](/blog/2025-09-06-upload-mosquito-magnum-arrived-jpg)
+- Toolhead cooling validation (5015 blower): [5015 Fan Toolhead Showcase](/blog/2025-09-06-upload-5015-fan-toolhead-showcase)
+- Beacon probe mount CAD: [CAD to Mount Beacon Eddy Current Probe](/blog/2025-09-06-upload-cad-to-mount-beacon-eddy-current-probe-jpg)
+- Wiring layout and harness routing: [Printer Wiring](/blog/2025-09-06-upload-printer-wiring)
+
+## Calibration path
+
+The tuning flow used throughout the docs is layered from coarse to fine:
+
+1) Mechanical baseline and motion sanity. See [Tuning](/docs/tuning).
+2) Extrusion and pressure advance. See [Tuning](/docs/tuning).
+3) Beacon mesh strategy and thermal drift checks. See [Advanced Tuning and Beacon Mesh](/docs/advanced-tuning).
+4) Surface finish, dimensional accuracy, and controlled experiments. See [Micro Tuning and Quality Diagnostics](/docs/micro-tuning).
+
+## Media index
+
+If you want to browse the visuals quickly, start with these update posts:
+
+- [Printer Toolhead Showcase](/blog/2025-09-06-upload-printer-toolhead-showcase)
+- [Printer Frame](/blog/2025-09-06-upload-printer-frame-jpg)
+- [Printer With Gantry On](/blog/2025-09-06-upload-printer-with-gantry-on-jpg)
+- [Printer Wiring](/blog/2025-09-06-upload-printer-wiring)
+- [Gantry CAD for AWD](/blog/2025-09-06-upload-gantry-cad-for-awd)
+- [Mosquito Magnum Arrived](/blog/2025-09-06-upload-mosquito-magnum-arrived-jpg)
+- [Toolhead Printed Out of PEEK](/blog/2025-09-06-upload-toolhead-printed-out-of-peek)
+- [5015 Fan Toolhead Showcase](/blog/2025-09-06-upload-5015-fan-toolhead-showcase)
+
+## Next steps
+
+Follow the existing build guide and run the tuning sequence once the machine is fully assembled. Each update post includes the next action checklist used during the build: verify torque, confirm belt tension and tram, then proceed to calibration prints.

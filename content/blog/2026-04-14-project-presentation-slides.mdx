@@ -1,0 +1,132 @@
+---
+title: Project Presentation Slides
+description: 18 slide overview of the Joe Printer HT HF 350 build, process, and documented updates.
+date: 2026-04-14
+tags: [presentation, updates]
+draft: false
+---
+
+# Project Presentation Slides
+
+This update packages a slide style presentation using the content already in the docs and update posts. Each slide is written as a short, scannable block for the feed.
+
+## Slide 01 - Title
+
+**Joe Printer HT HF 350**
+
+High flow CoreXY build log, documentation, and tuning reference.
+
+## Slide 02 - Why this build
+
+- Enclosed, rigid CoreXY platform for repeatable results
+- Documentation first approach: everything lives in MDX
+- Focus on calibration discipline, not just speed
+
+## Slide 03 - Architecture snapshot
+
+- CoreXY motion with a Z moving gantry
+- 2020 extrusion frame and linear rails
+- Klipper firmware for macros and input shaping
+
+Reference: [Voron 2.4 Style CoreXY Printer Overview](/docs/voron-24-style-printer)
+
+## Slide 04 - Frame alignment
+
+Frame squareness and structural alignment are captured here:
+
+<img src="/uploads/printer frame.JPG" alt="Printer Frame" style={{ maxWidth: '100%', height: 'auto', borderRadius: 6 }} />
+
+## Slide 05 - Gantry progress
+
+Gantry installation is documented in the build updates:
+
+<img src="/uploads/Printer with Gantry on.JPG" alt="Printer With Gantry On" style={{ maxWidth: '100%', height: 'auto', borderRadius: 6 }} />
+
+## Slide 06 - Gantry CAD iteration
+
+CAD checks for clearance and serviceability:
+
+<img src="/uploads/gantry cad for AWD.jpeg" alt="Gantry CAD for AWD" style={{ maxWidth: '100%', height: 'auto', borderRadius: 6 }} />
+
+## Slide 07 - Linear rail prep
+
+Cleaning and lubrication improve motion smoothness and shaping results:
+
+<img src="/uploads/Lubed and dried linear rails.JPG" alt="Lubed and Dried Linear Rails" style={{ maxWidth: '100%', height: 'auto', borderRadius: 6 }} />
+
+## Slide 08 - Motors staged
+
+Motor selection and installation readiness:
+
+<img src="/uploads/Motors.JPG" alt="Motors" style={{ maxWidth: '100%', height: 'auto', borderRadius: 6 }} />
+
+## Slide 09 - Printed parts batch
+
+Printed structural parts are ready for assembly:
+
+<img src="/uploads/Printed parts for printer.JPG" alt="Printed Parts for Printer" style={{ maxWidth: '100%', height: 'auto', borderRadius: 6 }} />
+
+## Slide 10 - Toolhead priorities
+
+- Balance mass, stiffness, and thermal stability
+- Cooling duct geometry drives surface finish
+- Weight and rigidity control ringing
+
+## Slide 11 - Toolhead materials
+
+PEEK parts and a titanium core show the material strategy:
+
+<img src="/uploads/toolhead printed out of PEEK.jpg" alt="Toolhead Printed Out of PEEK" style={{ maxWidth: '100%', height: 'auto', borderRadius: 6 }} />
+
+<video controls preload="metadata" style={{ width: '100%' }}><source src="/uploads/Titanium Core for holding Toolhead.mov" type="video/quicktime" /></video>
+
+## Slide 12 - High flow hotend
+
+Mosquito Magnum chosen for higher throughput:
+
+<img src="/uploads/Mosquito magnum+ arrived.JPG" alt="Mosquito Magnum Arrived" style={{ maxWidth: '100%', height: 'auto', borderRadius: 6 }} />
+
+## Slide 13 - Cooling validation
+
+5015 blower showcase for toolhead cooling:
+
+<video controls preload="metadata" style={{ width: '100%' }}><source src="/uploads/5015 fan toolhead showcase.mp4" type="video/mp4" /></video>
+
+## Slide 14 - Beacon probe mount
+
+CAD for the eddy current probe mounting:
+
+<img src="/uploads/CAD to mount Beacon eddy current probe.JPG" alt="CAD to Mount Beacon Eddy Current Probe" style={{ maxWidth: '100%', height: 'auto', borderRadius: 6 }} />
+
+## Slide 15 - Wiring layout
+
+Harness routing and electronics layout:
+
+<img src="/uploads/Printer Wiring.jpeg" alt="Printer Wiring" style={{ maxWidth: '100%', height: 'auto', borderRadius: 6 }} />
+
+## Slide 16 - Tuning workflow
+
+The baseline tuning flow is documented here:
+
+- Mechanical baseline and motion sanity
+- Extrusion steps and flow
+- Input shaping and pressure advance
+
+Reference: [Tuning](/docs/tuning)
+
+## Slide 17 - Advanced and micro tuning
+
+Deep calibration coverage:
+
+- Beacon mesh strategy and thermal drift checks
+- Surface finish diagnostics and controlled experiments
+
+References: [Advanced Tuning and Beacon Mesh](/docs/advanced-tuning) and [Micro Tuning and Quality Diagnostics](/docs/micro-tuning)
+
+## Slide 18 - Where to follow updates
+
+- Update log: [Update Log](/blog)
+- Documentation hub: [Documentation](/docs)
+- Live feed: [Feed](/stream)
+
+The build continues with final assembly validation and calibration prints as each subsystem is finished.
